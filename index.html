@@ -14,6 +14,16 @@
     />
   </head>
   <body>
+    <div class="container">
+      <form action="/action_page.php" id="player-form">
+        Player Name:<br />
+        <input type="text" name="firstname" placeholder="Mike" />
+        <br />
+        <input type="submit" value="Submit" />
+      </form>
+      <p id="waiting-player"></p>
+    </div>
+
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-app.js"></script>
 
