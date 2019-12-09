@@ -14,12 +14,13 @@
     />
   </head>
   <body>
-    <div class="container">
-      <form action="/action_page.php" id="player-form">
-        Player Name:<br />
-        <input type="text" name="firstname" placeholder="Mike" />
-        <br />
-        <input type="submit" value="Submit" />
+    <div class="container" role="form">
+      <form role="form" id="player-form">
+        <label for="name-input">Player Name:</label>
+        <input class="form-control" id="name-input" type="text" />
+        <button class="btn btn-default" id="add-user" type="submit">
+          Submit
+        </button>
       </form>
       <p id="waiting-player"></p>
     </div>
