@@ -95,4 +95,6 @@ function renderGame() {
     { merge: true }
   );
   $(".col-12").html("");
+  $(".start-row")[0].innerHTML += `<p>Choose Rock Paper or Scissors!</p>`;
+  $(".join-row")[0].innerHTML += `<img src="../images/paper.jpg">`;
 }
