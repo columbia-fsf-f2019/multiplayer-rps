@@ -1,5 +1,6 @@
 const db = firebase.firestore();
 const qs = selector => document.querySelector(selector);
+const qsa = selector => document.querySelectorAll(selector);
 let isGameRunning = false;
 
 db.collection("players")
@@ -24,6 +25,9 @@ function resetGame() {
 function launchGame() {
   let isGameRunning = true;
   qs(".game-holder").classList.remove("hidden");
+  qsa(".rps-decision-button").onclick = function(event) {
+    console.log(event);
+  };
 }
 
 // Upon page load check for whether or not other players are registered
