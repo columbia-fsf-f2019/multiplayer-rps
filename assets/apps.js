@@ -20,7 +20,9 @@ function resetGame() {
   writeData("playerTwo", "null");
 }
 
-resetGame();
+function launchGame() {
+  isGameRunning = true;
+}
 
 // Upon page load check for whether or not other players are registered
 db.collection("players")
@@ -49,5 +51,8 @@ db.collection("players")
       // The game is in session
       qs("#player-form").style.display = "none";
       qs("#waiting-player").style.display = "none";
+      if (isGameRunning === false) {
+        launchGame();
+      }
     }
   });
