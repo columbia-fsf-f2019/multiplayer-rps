@@ -1,5 +1,6 @@
 const db = firebase.firestore();
 const qs = selector => document.querySelector(selector);
+let isGameRunning = false;
 
 db.collection("players")
   .doc("x403VpJmjGFGDJvo88UY")
@@ -21,7 +22,8 @@ function resetGame() {
 }
 
 function launchGame() {
-  isGameRunning = true;
+  let isGameRunning = true;
+  qs(".game-holder").classList.remove("hidden");
 }
 
 // Upon page load check for whether or not other players are registered
