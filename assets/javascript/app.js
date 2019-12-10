@@ -12,7 +12,7 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 var db = firebase.firestore();
-var joiningGame;
+var game = db.collection("Game").doc("Game");
 
 // const qs = document.querySelector();
 const gameID = Math.random()
@@ -23,13 +23,11 @@ console.log(gameID);
 
 // Initialize Game
 $(".start-game-btn").on("click", function() {
-  db.collection("Game")
-    .doc("Game")
-    .set({
-      gameID: gameID,
-      isOwner: "yes",
-      gameover: "no"
-    });
+  game.set({
+    gameID: gameID,
+    isOwner: "yes",
+    gameover: "yes"
+  });
   $(".col-12").html("");
   $(
     ".start-row"
@@ -38,8 +36,19 @@ $(".start-game-btn").on("click", function() {
   $(
     ".join-row"
   )[0].innerHTML += `<h2> Waiting for another player to join game.....</h2>`;
+  game.onSnapshot(function(doc) {
+    if (
+      doc.data().gameID ===
+      $("#gameIDInput")
+        .val()
+        .trim()
+    ) {
+      renderGame();
+    }
+  });
 });
 
+// Join Game Functionality
 $(".join-game-btn").on("click", function(event) {
   $(".col-12").html("");
   $(".start-row")[0].innerHTML += `<form>
@@ -53,18 +62,28 @@ $(".join-game-btn").on("click", function(event) {
 
 $(".start-row").on("click", ".begin-btn", function(event) {
   event.preventDefault();
-  joiningGame = $("#gameIDInput")
-    .val()
-    .trim();
-  console.log(joiningGame);
-  return joiningGame;
-});
-
-db.collection("Game")
-  .doc("Game")
-  .onSnapshot(function(doc) {
-    if (doc.data().gameID === joiningGame);
+  game.set(
     {
-      console.log("itworked");
+      joiningID: $("#gameIDInput")
+        .val()
+        .trim()
+    },
+    { merge: true }
+  );
+  game.onSnapshot(function(doc) {
+    if (doc.data().gameID === doc.data().joiningID) {
+      renderGame();
+      console.log("Hello");
     }
   });
+});
+
+function renderGame() {
+  game.set(
+    {
+      joiningID: ""
+    },
+    { merge: true }
+  );
+  $(".col-12").html("");
+}
