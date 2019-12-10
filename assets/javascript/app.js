@@ -42,11 +42,11 @@ $(".start-game-btn").on("click", function() {
 });
 
 $(".other-row").on("click", ".start-btn", function(event) {
+  console.log("Hello");
   event.preventDefault();
   game.onSnapshot(function(doc) {
     if (doc.data().gameID === doc.data().joiningID) {
       renderGame();
-      console.log("Hello");
     }
   });
 });
