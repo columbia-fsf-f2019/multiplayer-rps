@@ -36,6 +36,13 @@ $(".start-game-btn").on("click", function() {
   $(
     ".join-row"
   )[0].innerHTML += `<h2> Waiting for another player to join game.....</h2>`;
+  $(
+    ".other-row"
+  )[0].innerHTML += `<button type="button" class="btn btn-primary btn-lg start-btn">Large button</button>`;
+});
+
+$(".other-row").on("click", ".start-btn", function(event) {
+  event.preventDefault();
   game.onSnapshot(function(doc) {
     if (
       doc.data().gameID ===
@@ -56,7 +63,7 @@ $(".join-game-btn").on("click", function(event) {
     <label for="GameIDInput">Enter The Game ID</label>
     <input type="text" class="form-control" id="gameIDInput" placeholder="Game ID">
   </div>
-  <button type="submit" class="btn btn-primary begin-btn">Submit</button>
+  <button type="submit" class="btn btn-primary begin-btn">Select</button>
 </form>`;
   game.onSnapshot(function(doc) {
     if (doc.data().gameID === doc.data().joiningID) {
