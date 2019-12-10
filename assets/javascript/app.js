@@ -58,6 +58,12 @@ $(".join-game-btn").on("click", function(event) {
   </div>
   <button type="submit" class="btn btn-primary begin-btn">Submit</button>
 </form>`;
+  game.onSnapshot(function(doc) {
+    if (doc.data().gameID === doc.data().joiningID) {
+      renderGame();
+      console.log("Hello");
+    }
+  });
 });
 
 $(".start-row").on("click", ".begin-btn", function(event) {
