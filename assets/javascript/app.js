@@ -40,61 +40,61 @@ $(".start-game-btn").on("click", function() {
     ".other-row"
   )[0].innerHTML += `<button type="button" class="btn btn-primary btn-lg start-btn">Large button</button>`;
 });
-
-$(".other-row").on("click", ".start-btn", function(event) {
-  console.log("Hello");
-  event.preventDefault();
-  game.onSnapshot(function(doc) {
-    if (doc.data().gameID === doc.data().joiningID) {
-      renderGame();
-    }
+game.onSnapshot(function(doc) {
+  $(".other-row").on("click", ".start-btn", function(event) {
+    console.log("Hello");
+    event.preventDefault();
+    game.set({
+      player2: "joined"
+    });
+    game.onSnapshot(function(doc) {
+      if (doc.data().gameID === doc.data().joiningID) {
+        renderGame();
+      }
+    });
   });
-});
 
-// Join Game Functionality
-$(".join-game-btn").on("click", function(event) {
-  $(".col-12").html("");
-  $(".start-row")[0].innerHTML += `<form>
+  // Join Game Functionality
+  $(".join-game-btn").on("click", function(event) {
+    $(".col-12").html("");
+    $(".start-row")[0].innerHTML += `<form>
   <div class="form-group">
     <label for="GameIDInput">Enter The Game ID</label>
     <input type="text" class="form-control" id="gameIDInput" placeholder="Game ID">
   </div>
   <button type="submit" class="btn btn-primary begin-btn">Select</button>
 </form>`;
-  game.onSnapshot(function(doc) {
     if (doc.data().gameID === doc.data().joiningID) {
       renderGame();
       console.log("Hello");
     }
   });
-});
 
-$(".start-row").on("click", ".begin-btn", function(event) {
-  event.preventDefault();
-  game.set(
-    {
-      joiningID: $("#gameIDInput")
-        .val()
-        .trim()
-    },
-    { merge: true }
-  );
-  game.onSnapshot(function(doc) {
+  $(".start-row").on("click", ".begin-btn", function(event) {
+    event.preventDefault();
+    game.set(
+      {
+        joiningID: $("#gameIDInput")
+          .val()
+          .trim()
+      },
+      { merge: true }
+    );
     if (doc.data().gameID === doc.data().joiningID) {
       renderGame();
       console.log("Hello");
     }
   });
-});
 
-function renderGame() {
-  game.set(
-    {
-      joiningID: ""
-    },
-    { merge: true }
-  );
-  $(".col-12").html("");
-  $(".start-row")[0].innerHTML += `<p>Choose Rock Paper or Scissors!</p>`;
-  $(".join-row")[0].innerHTML += `<img src="../images/paper.jpg">`;
-}
+  function renderGame() {
+    game.set(
+      {
+        joiningID: ""
+      },
+      { merge: true }
+    );
+    $(".col-12").html("");
+    $(".start-row")[0].innerHTML += `<p>Choose Rock Paper or Scissors!</p>`;
+    $(".join-row")[0].innerHTML += `<img src="../images/paper.jpg">`;
+  }
+});
