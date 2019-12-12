@@ -27,14 +27,6 @@ function writeDataOverWrite(collection, doc, key, value) {
     .set(data);
 }
 
-function listenToData(collection, doc, functionToExecute) {
-  db.collection(collection)
-    .doc(doc)
-    .onSnapshot(function(doc) {
-      functionToExecute;
-    });
-}
-
 function setLocalPlayerData(name, number) {
   localPlayerName = name;
   localPlayerNumber = number;
@@ -49,9 +41,8 @@ function resetGame() {
 }
 
 function launchGame() {
-  let isGameRunning = true;
+  isGameRunning = true;
   qs(".game-holder").classList.remove("hidden");
-  console.log("step 1");
   qs(".game-holder").onclick = function(event) {
     console.log(event.target.value);
   };
@@ -60,8 +51,7 @@ function launchGame() {
 // Upon page load check for whether or not other players are registered
 db.collection("players")
   .doc("x403VpJmjGFGDJvo88UY")
-  .get()
-  .then(function(doc) {
+  .onSnapshot(function(doc) {
     let playerOne = doc.data()["playerOne"];
     let playerTwo = doc.data()["playerTwo"];
     if (playerOne === "null") {
@@ -78,8 +68,17 @@ db.collection("players")
         setLocalPlayerData(qs("#name-input").value, 1);
         qs("#waiting-player").innerText = `You're all set! Hang tight`;
         qs("#player-form").style.display = "none";
+        db.collection("players")
+          .doc("x403VpJmjGFGDJvo88UY")
+          .onSnapshot(function(doc) {
+            let playerTwoHolder = doc.data()["playerTwo"];
+            if (playerTwoHolder != "null") {
+              launchGame();
+              qs("#waiting-player").style.display = "none";
+            }
+          });
       };
-    } else if (playerTwo === "null") {
+    } else if (playerTwo === "null" && localPlayerNumber != 1) {
       // Only playerOne has joined the game
       qs("#player-form").style.display = "block";
       qs("#waiting-player").innerText = `${playerOne} is waiting for you!`;
@@ -92,13 +91,12 @@ db.collection("players")
           qs("#name-input").value
         );
         setLocalPlayerData(qs("#name-input").value, 2);
+        qs("#player-form").style.display = "none";
+        qs("#waiting-player").style.display = "none";
+        if (isGameRunning === false) {
+          launchGame();
+        }
       };
-    } else {
       // The game is in session
-      qs("#player-form").style.display = "none";
-      qs("#waiting-player").style.display = "none";
-      if (isGameRunning === false) {
-        launchGame();
-      }
     }
   });
