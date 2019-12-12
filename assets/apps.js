@@ -12,11 +12,11 @@ db.collection("players")
     console.log("Current data: ", doc.data());
   });
 
-function writeDataMerge(collection, doc, key, value) {
+function writeDataMerge(key, value) {
   let data = {};
   data[key] = value;
-  db.collection(collection)
-    .doc(doc)
+  db.collection("players")
+    .doc("x403VpJmjGFGDJvo88UY")
     .set(data, { merge: true });
 }
 
@@ -34,12 +34,12 @@ function setLocalPlayerData(name, number, key) {
   localPlayerKey = key;
 }
 function resetGame() {
-  writeDataMerge("players", "x403VpJmjGFGDJvo88UY", "playerOne", "null");
-  writeDataMerge("players", "x403VpJmjGFGDJvo88UY", "playerTwo", "null");
-  writeDataMerge("players", "x403VpJmjGFGDJvo88UY", "playerOnePick", "null");
-  writeDataMerge("players", "x403VpJmjGFGDJvo88UY", "playerTwoPick", "null");
-  writeDataMerge("players", "x403VpJmjGFGDJvo88UY", "playerOneScore", 0);
-  writeDataMerge("players", "x403VpJmjGFGDJvo88UY", "playerTwoScore", 0);
+  writeDataMerge("playerOne", "null");
+  writeDataMerge("playerTwo", "null");
+  writeDataMerge("playerOnePick", "null");
+  writeDataMerge("playerTwoPick", "null");
+  writeDataMerge("playerOneScore", 0);
+  writeDataMerge("playerTwoScore", 0);
 }
 
 // Upon page load check for whether or not other players are registered
@@ -53,12 +53,7 @@ db.collection("players")
       qs("#player-form").style.display = "block";
       qs("#add-user").onclick = function(event) {
         event.preventDefault();
-        writeDataMerge(
-          "players",
-          "x403VpJmjGFGDJvo88UY",
-          "playerOne",
-          qs("#name-input").value
-        );
+        writeDataMerge("playerOne", qs("#name-input").value);
         setLocalPlayerData(qs("#name-input").value, 1, "playerOne");
         qs("#waiting-player").innerText = `You're all set! Hang tight`;
         qs("#player-form").style.display = "none";
@@ -78,13 +73,8 @@ db.collection("players")
       qs("#waiting-player").innerText = `${playerOne} is waiting for you!`;
       qs("#add-user").onclick = function(event) {
         event.preventDefault();
-        writeDataMerge(
-          "players",
-          "x403VpJmjGFGDJvo88UY",
-          "playerTwo",
-          qs("#name-input").value
-        );
-        setLocalPlayerData(qs("#name-input").value, 2, playerTwo);
+        writeDataMerge("playerTwo", qs("#name-input").value);
+        setLocalPlayerData(qs("#name-input").value, 2, "playerTwo");
         qs("#player-form").style.display = "none";
         qs("#waiting-player").style.display = "none";
         if (isGameRunning === false) {
@@ -100,12 +90,7 @@ function launchGame() {
   isGameRunning = true;
   qs(".game-holder").classList.remove("hidden");
   qs(".game-holder").onclick = function(event) {
-    writeDataMerge(
-      "players",
-      "x403VpJmjGFGDJvo88UY",
-      localPlayerKey + "pick",
-      event.target.value
-    );
+    writeDataMerge(localPlayerKey + "Pick", event.target.value);
   };
   if (localPlayerNumber === 1) {
     judgeGame();
@@ -121,29 +106,57 @@ function judgeGame() {
       let playerTwoPick = doc.data()["playerTwoPick"];
       let playerOneScore = doc.data()["playerOneScore"];
       let playerTwoScore = doc.data()["playerTwoScore"];
+
       if (playerOnePick != "null" && playerTwoPick != "null") {
         // Run the RPS logic
-
+        runRPSLogic(
+          playerOnePick,
+          playerTwoPick,
+          playerOneScore,
+          playerTwoScore
+        );
         // Refresh the picks in the database
-        writeDataMerge(
-          "players",
-          "x403VpJmjGFGDJvo88UY",
-          "playerOnePick",
-          "null"
-        );
-        writeDataMerge(
-          "players",
-          "x403VpJmjGFGDJvo88UY",
-          "playerTwoPick",
-          "null"
-        );
+        writeDataMerge("playerOnePick", "null");
+        writeDataMerge("playerTwoPick", "null");
       }
     });
 }
 
-function runRPSLogic(playerOnePick, playerTwoPick) {
+function runRPSLogic(
+  playerOnePick,
+  playerTwoPick,
+  playerOneScore,
+  playerTwoScore
+) {
   if (playerOnePick === "rocks") {
     if (playerTwoPick === "scissors") {
+      playerOneScore++;
+      writeDataMerge("playerOneScore", playerOneScore);
+    } else if (playerTwoPick === "rocks") {
+      // Tie
+    } else if (playerTwoPick === "paper") {
+      playerTwoScore++;
+      writeDataMerge("playerTwoScore", playerTwoScore);
+    }
+  } else if (playerOnePick === "scissors") {
+    if (playerTwoPick === "scissors") {
+      // Tie
+    } else if (playerTwoPick === "rocks") {
+      playerTwoScore++;
+      writeDataMerge("playerTwoScore", playerTwoScore);
+    } else if (playerTwoPick === "paper") {
+      playerOneScore++;
+      writeDataMerge("playerOneScore", playerOneScore);
+    }
+  } else if (playerOnePick === "paper") {
+    if (playerTwoPick === "scissors") {
+      playerTwoScore++;
+      writeDataMerge("playerTwoScore", playerTwoScore);
+    } else if (playerTwoPick === "rocks") {
+      playerOneScore++;
+      writeDataMerge("playerOneScore", playerOneScore);
+    } else if (playerTwoPick === "paper") {
+      // Tie
     }
   }
 }
