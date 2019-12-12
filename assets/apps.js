@@ -160,3 +160,5 @@ function runRPSLogic(
     }
   }
 }
+
+// function updateScoreBoard
