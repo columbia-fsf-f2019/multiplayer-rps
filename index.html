@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Rocks Paper Scissors</title>
+    <link rel="stylesheet" href="./assets/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="container" role="form">
+      <form role="form" id="player-form">
+        <label for="name-input">Player Name:</label>
+        <input class="form-control" id="name-input" type="text" />
+        <button class="btn btn-default" id="add-user" type="submit">
+          Submit
+        </button>
+      </form>
+      <p id="waiting-player"></p>
+      <div class="game-holder hidden">
+        <button class="rps-decision-button" value="rocks">Rocks</button>
+        <button class="rps-decision-button" value="paper">Paper</button>
+        <button class="rps-decision-button" value="scissors">Scissors</button>
+        <p>Score</p>
+      </div>
+    </div>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-firestore.js"></script>
+
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyBdsnW41Y9SnJMCoT7DcgI5LmAiiHhF7w4",
+        authDomain: "rock-paper-scissors-37f68.firebaseapp.com",
+        databaseURL: "https://rock-paper-scissors-37f68.firebaseio.com",
+        projectId: "rock-paper-scissors-37f68",
+        storageBucket: "rock-paper-scissors-37f68.appspot.com",
+        messagingSenderId: "213900573015",
+        appId: "1:213900573015:web:62739f778ec83e026fa612"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+    </script>
+    <script src="./assets/apps.js"></script>
+  </body>
+</html>
