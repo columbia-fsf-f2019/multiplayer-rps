@@ -17,8 +17,13 @@ function writeDataMerge(collection, doc, data) {
     .set(data, { merge: true });
 }
 
-var db = firebase.firestore();
-var game = db.collection("Game").doc("Game");
+const db = firebase.firestore();
+const game = db.collection("Game").doc("Game");
+let roundNum = 0;
+let currentRound = "round" + roundNum;
+let answer;
+let playersArray;
+let nickname;
 
 // const qs = document.querySelector();
 const gameID = Math.random()
@@ -82,8 +87,9 @@ $(".create-game-btn").on("click", function() {
       roundCounter: 1,
       gameStarted: false
     });
+  nickname = "player1";
 
-  pushPlayersToDB("Game", "player1");
+  pushPlayersToDB("Game", nickname);
 });
 
 //function that pushes player to DB
@@ -134,17 +140,28 @@ $(".start-row").on("click", ".begin-btn", function(event) {
   db.collection("Game")
     .doc("player2")
     .set({});
-  pushPlayersToDB("Game", "player2");
+  nickname = "player2";
+  pushPlayersToDB("Game", nickname);
 });
 game.onSnapshot(function(doc) {
   console.log(doc.data().gameID, doc.data().joiningID);
   if (doc.data().gameID === doc.data().joiningID) {
     console.log("Hello");
+    //render players array
+    db.collection("Game")
+      .doc("Game")
+      .get()
+      .then(function(doc) {
+        playersArray = doc.data()["players"];
+        console.log(playersArray);
+      });
     renderGame();
   }
 });
 
+//render Game Function
 function renderGame() {
+  roundNum++;
   game.set(
     {
       joiningID: "",
@@ -152,7 +169,8 @@ function renderGame() {
     },
     { merge: true }
   );
-  writeDataMerge(gameID, "round1", {});
+
+  writeDataMerge("Game", currentRound, {});
   $(".col-12").html("");
   $(".start-row")[0].innerHTML += `<p>Choose Rock Paper or Scissors!</p>`;
   $(
@@ -160,7 +178,29 @@ function renderGame() {
   )[0].innerHTML += `<img class="paper" src="assets/images/paper.jpg" width="150"><img class="rock" src="assets/images/rock.jpg" width="150"><img class="scissors" src="assets/images/scisors.jpg" width="150">`;
 }
 
-// $(".join-row").on("click", ".rock", function() {
-//   console.log("hello");
-//   console.log(db.)
-// });
+// establishes players array
+
+// select rock
+$(".join-row").on("click", ".rock", function() {
+  answer = "rock";
+  let data = {};
+  data[`${nickname}`] = answer;
+  console.log(data);
+  writeDataMerge("Game", currentRound, data);
+});
+
+$(".join-row").on("click", ".paper", function() {
+  answer = "paper";
+  let data = {};
+  data[`${nickname}`] = answer;
+  console.log(data);
+  writeDataMerge("Game", currentRound, data);
+});
+
+$(".join-row").on("click", ".scissors", function() {
+  answer = "scissors";
+  let data = {};
+  data[`${nickname}`] = answer;
+  console.log(data);
+  writeDataMerge("Game", currentRound, data);
+});
