@@ -181,26 +181,16 @@ function renderGame() {
 // establishes players array
 
 // select rock
-$(".join-row").on("click", ".rock", function() {
-  answer = "rock";
-  let data = {};
-  data[`${nickname}`] = answer;
-  console.log(data);
-  writeDataMerge("Game", currentRound, data);
-});
+function gameListeners(guess) {
+  $(".join-row").on("click", `.${guess}`, function() {
+    answer = guess;
+    let data = {};
+    data[`${nickname}`] = answer;
+    console.log(data);
+    writeDataMerge("Game", currentRound, data);
+  });
+}
 
-$(".join-row").on("click", ".paper", function() {
-  answer = "paper";
-  let data = {};
-  data[`${nickname}`] = answer;
-  console.log(data);
-  writeDataMerge("Game", currentRound, data);
-});
-
-$(".join-row").on("click", ".scissors", function() {
-  answer = "scissors";
-  let data = {};
-  data[`${nickname}`] = answer;
-  console.log(data);
-  writeDataMerge("Game", currentRound, data);
-});
+gameListeners("rock");
+gameListeners("paper");
+gameListeners("scissors");
