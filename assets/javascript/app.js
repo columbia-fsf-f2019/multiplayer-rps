@@ -178,8 +178,6 @@ function renderGame() {
   )[0].innerHTML += `<img class="paper" src="assets/images/paper.jpg" width="150"><img class="rock" src="assets/images/rock.jpg" width="150"><img class="scissors" src="assets/images/scisors.jpg" width="150">`;
 }
 
-// establishes players array
-
 // select rock
 function gameListeners(guess) {
   $(".join-row").on("click", `.${guess}`, function() {
@@ -188,9 +186,39 @@ function gameListeners(guess) {
     data[`${nickname}`] = answer;
     console.log(data);
     writeDataMerge("Game", currentRound, data);
+    selectWinner();
   });
 }
 
 gameListeners("rock");
 gameListeners("paper");
 gameListeners("scissors");
+
+function selectWinner() {
+  db.collection("Game")
+    .doc(currentRound)
+    .get()
+    .then(function(doc) {
+      if (doc.data()["player1"] === "rock") {
+        if (doc.data()["player2"] === "scissors") {
+          console.log("player1 wins");
+        } else if (doc.data()["player2"] === "paper") {
+          console.log("player2 wins");
+        }
+      }
+      if (doc.data()["player1"] === "paper") {
+        if (doc.data()["player2"] === "rock") {
+          console.log("player1 wins");
+        } else if (doc.data()["player2"] === "scissors") {
+          console.log("player2 wins");
+        }
+      }
+      if (doc.data()["player1"] === "scissors") {
+        if (doc.data()["player2"] === "paper") {
+          console.log("player1 wins");
+        } else if (doc.data()["player2"] === "rock") {
+          console.log("player2 wins");
+        }
+      }
+    });
+}
