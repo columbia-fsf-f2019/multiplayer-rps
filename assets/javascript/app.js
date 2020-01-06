@@ -25,6 +25,7 @@ let answer;
 let playersArray;
 let nickname;
 let unsubJoin;
+let unsubStart;
 let gameID;
 
 // const qs = document.querySelector();
@@ -64,14 +65,15 @@ $(".create-game-btn").on("click", function() {
   console.log(gameID);
   game = db.collection(gameID).doc("Game");
   game.set({
-    gameID: gameID,
-    isOwner: "yes",
-    gameover: "yes",
-    players: []
+    gameID: gameID
   });
-  db.collection(gameID)
-    .doc("player1")
-    .set({});
+
+  let pushPlayer1 = {};
+  pushPlayer1["player1"] = 0;
+  writeDataMerge(gameID, "Game", pushPlayer1);
+  console.log(pushPlayer1);
+  nickname = "player1";
+
   $(".col-12").html("");
   $(
     ".start-row"
@@ -83,29 +85,24 @@ $(".create-game-btn").on("click", function() {
   $(
     ".other-row"
   )[0].innerHTML += `<button type="button" class="btn btn-primary btn-lg start-btn">Large button</button>`;
+
   db.collection(gameID)
     .doc("Game")
-    .set({
-      gameID: gameID,
-      roundCounter: 1,
-      gameStarted: false
-    });
-  nickname = "player1";
+    .set(
+      {
+        gameID: gameID,
+        roundCounter: 1
+      },
+      { merge: true }
+    );
 
-  pushPlayersToDB("Game", nickname);
-  game.onSnapshot(function(doc) {
+  unsubStart = game.onSnapshot(function(doc) {
     console.log(doc.data().gameID, doc.data().joiningID);
     if (doc.data().gameID === doc.data().joiningID) {
       console.log("Hello");
       //render players array
-      db.collection("Game")
-        .doc("Game")
-        .get()
-        .then(function(doc) {
-          playersArray = doc.data()["players"];
-          console.log(playersArray);
-        });
       renderGame();
+      unsubStart();
     }
   });
 });
@@ -153,6 +150,10 @@ $(".start-row").on("click", ".begin-btn", function(event) {
       },
       { merge: true }
     );
+  let pushPlayer2 = {};
+  pushPlayer2["player2"] = 0;
+  writeDataMerge(joinID, "Game", pushPlayer2);
+  nickname = "player2";
   unsubJoin = db
     .collection(joinID)
     .doc("Game")
@@ -164,18 +165,12 @@ $(".start-row").on("click", ".begin-btn", function(event) {
         unsubJoin();
       }
     });
-  db.collection(joinID)
-    .doc("player2")
-    .set({});
-  nickname = "player2";
-  pushPlayersToDB("Game", nickname);
 });
 
 //render Game Function
 function renderGame() {
   roundNum++;
-
-  writeDataMerge("Game", currentRound, {});
+  writeDataMerge(gameID, currentRound, {});
   $(".col-12").html("");
   $(".start-row")[0].innerHTML += `<p>Choose Rock Paper or Scissors!</p>`;
   $(
@@ -190,7 +185,7 @@ function gameListeners(guess) {
     let data = {};
     data[`${nickname}`] = answer;
     console.log(data);
-    writeDataMerge("Game", currentRound, data);
+    writeDataMerge(gameID, currentRound, data);
     selectWinner();
   });
 }
@@ -200,7 +195,7 @@ gameListeners("paper");
 gameListeners("scissors");
 
 function selectWinner() {
-  db.collection("Game")
+  db.collection(gameID)
     .doc(currentRound)
     .get()
     .then(function(doc) {
