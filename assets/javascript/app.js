@@ -1,11 +1,11 @@
 var firebaseConfig = {
-  apiKey: "AIzaSyCwndgjTGuR30Sx-sDMP_3YDdqth5nKwE0",
-  authDomain: "rps-multiplayer-148f9.firebaseapp.com",
-  databaseURL: "https://rps-multiplayer-148f9.firebaseio.com",
-  projectId: "rps-multiplayer-148f9",
-  storageBucket: "rps-multiplayer-148f9.appspot.com",
-  messagingSenderId: "532502259116",
-  appId: "1:532502259116:web:54ac2f1f19330a92710609"
+  apiKey: "AIzaSyD5gJ2sYTs_NIK_ezudGbP_dKCKlU8awHo",
+  authDomain: "rps-multi2.firebaseapp.com",
+  databaseURL: "https://rps-multi2.firebaseio.com",
+  projectId: "rps-multi2",
+  storageBucket: "rps-multi2.appspot.com",
+  messagingSenderId: "689284357464",
+  appId: "1:689284357464:web:7d4326e126d50fc93c592d"
 };
 
 // Initialize Firebase
@@ -18,29 +18,26 @@ function writeDataMerge(collection, doc, data) {
 }
 
 const db = firebase.firestore();
-const game = db.collection("Game").doc("Game");
+let game;
 let roundNum = 0;
 let currentRound = "round" + roundNum;
 let answer;
 let playersArray;
 let nickname;
+let unsubJoin;
+let gameID;
 
 // const qs = document.querySelector();
-const gameID = Math.random()
-  .toString(36)
-  .substr(2, 2);
 
-console.log(gameID);
-
-// A $( document ).ready() block.
-$(document).ready(function() {
-  game.set(
-    {
-      joiningID: ""
-    },
-    { merge: true }
-  );
-});
+// // A $( document ).ready() block.
+// $(document).ready(function() {
+//   game.set(
+//     {
+//       joiningID: ""
+//     },
+//     { merge: true }
+//   );
+// });
 
 $(".container")[0].innerHTML += `
 <div class="col-12 mt-4 mb-4 start-row d-flex justify-content-center">
@@ -60,13 +57,19 @@ $(".container")[0].innerHTML += `
 //=====================
 // Initialize Game
 $(".create-game-btn").on("click", function() {
+  gameID = Math.random()
+    .toString(36)
+    .substr(2, 2);
+
+  console.log(gameID);
+  game = db.collection(gameID).doc("Game");
   game.set({
     gameID: gameID,
     isOwner: "yes",
     gameover: "yes",
     players: []
   });
-  db.collection("Game")
+  db.collection(gameID)
     .doc("player1")
     .set({});
   $(".col-12").html("");
@@ -80,7 +83,7 @@ $(".create-game-btn").on("click", function() {
   $(
     ".other-row"
   )[0].innerHTML += `<button type="button" class="btn btn-primary btn-lg start-btn">Large button</button>`;
-  db.collection(`Game`)
+  db.collection(gameID)
     .doc("Game")
     .set({
       gameID: gameID,
@@ -90,6 +93,21 @@ $(".create-game-btn").on("click", function() {
   nickname = "player1";
 
   pushPlayersToDB("Game", nickname);
+  game.onSnapshot(function(doc) {
+    console.log(doc.data().gameID, doc.data().joiningID);
+    if (doc.data().gameID === doc.data().joiningID) {
+      console.log("Hello");
+      //render players array
+      db.collection("Game")
+        .doc("Game")
+        .get()
+        .then(function(doc) {
+          playersArray = doc.data()["players"];
+          console.log(playersArray);
+        });
+      renderGame();
+    }
+  });
 });
 
 //function that pushes player to DB
@@ -119,10 +137,6 @@ $(".join-game-btn").on("click", function(event) {
   </div>
   <button type="submit" class="btn btn-primary begin-btn">Select</button>
 </form>`;
-  if (doc.data().gameID === doc.data().joiningID) {
-    renderGame();
-    console.log("Hello");
-  }
 });
 
 $(".start-row").on("click", ".begin-btn", function(event) {
@@ -131,44 +145,35 @@ $(".start-row").on("click", ".begin-btn", function(event) {
     .val()
     .trim();
 
-  game.set(
-    {
-      joiningID: joinID
-    },
-    { merge: true }
-  );
-  db.collection("Game")
+  db.collection(joinID)
+    .doc("Game")
+    .set(
+      {
+        joiningID: joinID
+      },
+      { merge: true }
+    );
+  unsubJoin = db
+    .collection(joinID)
+    .doc("Game")
+    .onSnapshot(function(doc) {
+      if (doc.data().gameID === doc.data().joiningID) {
+        gameID = joinID;
+        renderGame();
+        console.log("Hello");
+        unsubJoin();
+      }
+    });
+  db.collection(joinID)
     .doc("player2")
     .set({});
   nickname = "player2";
   pushPlayersToDB("Game", nickname);
 });
-game.onSnapshot(function(doc) {
-  console.log(doc.data().gameID, doc.data().joiningID);
-  if (doc.data().gameID === doc.data().joiningID) {
-    console.log("Hello");
-    //render players array
-    db.collection("Game")
-      .doc("Game")
-      .get()
-      .then(function(doc) {
-        playersArray = doc.data()["players"];
-        console.log(playersArray);
-      });
-    renderGame();
-  }
-});
 
 //render Game Function
 function renderGame() {
   roundNum++;
-  game.set(
-    {
-      joiningID: "",
-      gameover: "no"
-    },
-    { merge: true }
-  );
 
   writeDataMerge("Game", currentRound, {});
   $(".col-12").html("");
