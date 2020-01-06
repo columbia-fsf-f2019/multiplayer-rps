@@ -27,6 +27,8 @@ let nickname;
 let unsubJoin;
 let unsubStart;
 let gameID;
+let player1Score = 0;
+let player2Score = 0;
 
 // const qs = document.querySelector();
 
@@ -202,23 +204,44 @@ function selectWinner() {
       if (doc.data()["player1"] === "rock") {
         if (doc.data()["player2"] === "scissors") {
           console.log("player1 wins");
+          player1Wins();
         } else if (doc.data()["player2"] === "paper") {
           console.log("player2 wins");
+          player2Wins();
         }
       }
       if (doc.data()["player1"] === "paper") {
         if (doc.data()["player2"] === "rock") {
           console.log("player1 wins");
+          player1Wins();
         } else if (doc.data()["player2"] === "scissors") {
           console.log("player2 wins");
+          player2Wins();
         }
       }
       if (doc.data()["player1"] === "scissors") {
         if (doc.data()["player2"] === "paper") {
+          player1Wins();
           console.log("player1 wins");
         } else if (doc.data()["player2"] === "rock") {
+          player2Wins();
           console.log("player2 wins");
         }
       }
     });
+}
+
+function player1Wins() {
+  player1Score++;
+  console.log(player1Score);
+  let data = {};
+  data["player1"] = player1Score;
+  writeDataMerge(gameID, "Game", data);
+}
+function player2Wins() {
+  player2Score++;
+  console.log(player2Score);
+  let data = {};
+  data["player2"] = player2Score;
+  writeDataMerge(gameID, "Game", data);
 }
